@@ -1,3 +1,12 @@
+/**
+Author: Eric Oropezaelwood
+Date: 04 September 2018
+PE1
+
+This program will create 2 three dimensional points and calculate
+the euclidean distance between the points and print out their coordinates.
+**/
+
 #include <iostream>
 #include "Point.h"
 
