@@ -1,39 +1,51 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #include "catch.hpp"
-
 #include "Store.h"
 #include "Item.h"
 #include "TextUI.h"
 
 ShoppingCart sc;
 Store store("store.txt");
-Item apple(111, "apple", 1.25, 1);
-Item banana(112, "banana", .85, 1);
-Item coffee(113, "coffee", 2.45, 3);
+std::vector<Item *> inventory = store.GetInventory();
 
 TEST_CASE ( "addItem", "[shoppingCart]")
 {
 
-	SECTION( "addItem" )
+	SECTION( "Basic functionality" )
 	{
 		std::vector<Item *> before = sc.get_items();
-		//Item banana(112, "banana", .85, 1);
-		sc.AddItem(&banana);
+		sc.AddItem(inventory[0]);
 		std::vector<Item *> after = sc.get_items();
 
-		REQUIRE(before != after);
+		REQUIRE(before.size() == after.size() - 1);
 	}
-
+	SECTION( "Check if the last item is the one added" )
+	{
+		std::vector<Item *> before = sc.get_items();
+		sc.AddItem(inventory[0]);
+		std::vector<Item *> after = sc.get_items();
+		REQUIRE(after.back() == inventory[0]);
+	}
+	/*SECTION( "Check if inventory's quantity is reduced" )
+	{
+		int before = inventory[0] -> get_quantity();
+		sc.AddItem(inventory[0]);
+		int after = inventory[0] -> get_quantity();
+		REQUIRE();
+	}*/
 }
 
 TEST_CASE ( "removeItem", "[shoppingCart]")
 {
 	SECTION( "removeItem" )
 	{
-		sc.AddItem(&apple);
-		sc.AddItem(&banana);
+		sc.AddItem(inventory[0]);
+		sc.AddItem(inventory[1]);
 		std::vector<Item *> before = sc.get_items();
-		sc.RemoveItem(&apple);
+		sc.RemoveItem(inventory[0]);
 		std::vector<Item *> after = sc.get_items();
 
 		REQUIRE(before.size() != after.size());
@@ -154,3 +166,18 @@ TEST_CASE ( "clearCartStore", "[store]")
 	}
 
 }
+
+TEST_CASE ( "operator<<", "[item]")
+{
+	SECTION( "operator<<" )
+	{
+		Item * i = inventory[0];
+		std::ostringstream oss;
+		std::streambuf * backup = std::cout.rdbuf();
+		std::cout.rdbuf(oss.rdbuf());
+		std::cout << *i;
+		std::cout.rdbuf(backup);
+		REQUIRE(oss.str() == i->ToString());
+	}
+}
+

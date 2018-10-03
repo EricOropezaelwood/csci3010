@@ -51,6 +51,7 @@ public:
 
   void ClearCart();
 
+  std::vector<Item *> GetInventory() { return inventory_; }
 
 
 private:
