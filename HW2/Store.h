@@ -51,7 +51,7 @@ public:
 
   void ClearCart();
 
-
+  std::vector<Item *> get_inventory() { return inventory_; };  
 
 private:
   std::string name_;

@@ -13,41 +13,54 @@
 */
 
 std::string ShoppingCart::DisplayCart() {
-  std::string inv = "";
-  for (Item * i : in_cart_) {
-    inv.append(i->ToString());
-    inv.append("\n");
-  }
-  return inv;
+  
+    std::string inv = "";
+    for (Item * i : in_cart_) {
+      inv.append(i->ToString());
+      inv.append("\n");
+    }
+    return inv;
+
 }
 
 void ShoppingCart::RemoveItem(Item * to_remove) {
-  if (to_remove->get_quantity() > 1) {
+  if (to_remove->get_quantity() > 1) 
+  {
     to_remove->DecreaseQuantity(1);
-  } else {
+  } 
+  else 
+  {
     int target = -1;
-    for (int i = 0; i < in_cart_.size(); i++) {
-      if (in_cart_[i] == to_remove) {
+    for (int i = 0; i < in_cart_.size(); i++) 
+    {
+      if (in_cart_[i] == to_remove) 
+      {
         target = i;
         break;
       }
     }
-    if (target >= 0) {
+    if (target >= 0) 
+    {
       in_cart_.erase(in_cart_.begin() + target);
     }
   }
 }
 
-void ShoppingCart::AddItem(Item * to_add) {
+void ShoppingCart::AddItem(Item * to_add) 
+{
   bool added = false;
-  for (int i = 0; i < in_cart_.size(); i++) {
-    if (in_cart_[i]->get_id() == to_add->get_id()) {
+  for (int i = 0; i < in_cart_.size(); i++) 
+  {
+    // added condition for > 0 item quantity in inventory
+    if (((in_cart_[i]->get_id() == to_add->get_id()) && (to_add->get_quantity() > 0))) 
+    {
       in_cart_[i]->IncreaseQuantity(1);
       added = true;
       break;
     }
   }
-  if (!added) {
+  if (!added) 
+  {
     in_cart_.push_back(to_add);
   }
 }
@@ -73,10 +86,12 @@ Store::Store(std::string filename) {
     }
     if (line.substr(0, inv.size()) == inv) {
       inventory = true;
-    } else if (inventory) {
+    } 
+    else if (inventory) {
       std::vector<std::string> tokens;
       std::istringstream iss(line);
       std::string token;
+      
       while(std::getline(iss, token, ',')) {
         tokens.push_back(token);
       }
