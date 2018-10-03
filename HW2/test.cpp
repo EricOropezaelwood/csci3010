@@ -275,3 +275,17 @@ TEST_CASE ( "toString", "[item]")
 
 	}
 }
+
+TEST_CASE ( "operator<<", "[item]")
+{
+	SECTION( "functionality" )
+	{
+		Item*i = inventory[0];
+		std::ostringstream oss;
+		std::streambuf * backup = std::cout.rdbuf();
+		std::cout.rdbuf(oss.rdbuf());
+		std::cout << *i;
+		std::cout.rdbuf(backup);
+		REQUIRE( oss.str() == i->ToString());
+	}
+}
