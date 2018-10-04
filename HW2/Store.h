@@ -53,6 +53,7 @@ public:
 
   std::vector<Item *> GetInventory() { return inventory_; }
 
+  ShoppingCart * GetCart() {return cart_; }
 
 private:
   std::string name_;

@@ -124,26 +124,52 @@ TEST_CASE ( "displayInventory", "[store]")
 
 TEST_CASE ( "items", "[store]")
 {
-	SECTION( "items" )
+	SECTION( "Basic functionality" )
 	{
-		std::map<int, std::string> testItems = store.Items();
-		REQUIRE( testItems.empty() == false );
+		std::map<int, std::string> items = store.Items();
+		REQUIRE(!store.Items().empty());
 	}
+	SECTION( "Check if items are correct" )
+	{
+		std::map<int, std::string> items;
+		for (Item * i : inventory) {
+			if (i->get_quantity() > 0) {
+				items.insert({i->get_id(), i->ToString()});
+			}
+		}
+		REQUIRE(store.Items() == items);
+	}	
 }
 
 TEST_CASE ( "cartItems", "[store]")
 {
-	SECTION( "cartItems" )
+	SECTION( "Basic functionality" )
+	{
+		store.ClearCart();
+		REQUIRE(store.CartItems().empty());
+	}
+	SECTION( "Basic functionality" )
 	{
 		store.AddItemToCart(2);
 		std::map<int, std::string> testCartItems = store.CartItems();
 		REQUIRE( testCartItems.empty() == false );
 	}
+	SECTION( "Check if CartItems are correct" )
+	{
+		store.AddItemToCart(2);
+		std::map<int, std::string> items;
+		for (Item * i : sc.get_items()) {
+			if (i->get_quantity() > 0) {
+				items.insert({i->get_id(), i->ToString()});
+			}
+		}
+		REQUIRE(store.CartItems() == items);
+	}
 }
 
 TEST_CASE ( "addItemToCart", "[store]")
 {
-	SECTION( "addItemToCart" )
+	SECTION( "Basic functionality" )
 	{
 		std::string before = store.DisplayCart();
 
@@ -152,28 +178,49 @@ TEST_CASE ( "addItemToCart", "[store]")
 
 		REQUIRE( before != after );
 	}
+	SECTION( "Check if the item added is the item at the back of vector" )
+	{
+		store.AddItemToCart(1);
+		ShoppingCart * ShoppingCart = store.GetCart();
+		std::vector<Item *> items = ShoppingCart->get_items();
+		REQUIRE( items.back()->get_id() == 1 );
+	}
 }
 
 TEST_CASE ( "removeItemFromCart", "[store]")
 {
-	SECTION( "removeItemFromCart" )
+	SECTION( "Check if the item removed is the item at the back of vector" )
 	{
-		std::string before = store.DisplayCart();
-
+		ShoppingCart * ShoppingCart = store.GetCart();
+		ShoppingCart->ClearCart();
+		store.AddItemToCart(1);
+		std::vector<Item *> before = ShoppingCart->get_items();
 		store.RemoveItemFromCart(1);
-		std::string after = store.DisplayCart();
-
-		REQUIRE( before != after );
+		std::vector<Item *> after = ShoppingCart->get_items();
+		before.pop_back();
+		REQUIRE( before == after );
 	}
 }
 
 TEST_CASE ( "displayCartStore", "[store]")
 {
 
-	SECTION( "displayCartStore" )
+	SECTION( "Basic functionality without items" )
 	{
 		store.ClearCart();
 		REQUIRE(store.DisplayCart() == "");
+	}
+	SECTION( "Basic functionality with items" )
+	{
+		store.ClearCart();
+		store.AddItemToCart(1);
+		std::string str = "";
+		ShoppingCart * ShoppingCart = store.GetCart();
+		std::vector<Item *> items = ShoppingCart->get_items();
+		for (Item * i : items) {
+			str += i->ToString() + "\n";
+		}
+		REQUIRE(store.DisplayCart() == str);
 	}
 }
 
@@ -182,9 +229,22 @@ TEST_CASE ( "checkout", "[store]")
 
 	SECTION( "checkout" )
 	{
+		store.ClearCart();
 		double final = store.Checkout();
-
 		REQUIRE(final == 0.00 );
+	}
+	SECTION( "checkout" )
+	{
+		store.ClearCart();
+		store.AddItemToCart(1);
+		ShoppingCart * ShoppingCart = store.GetCart();
+		double final = store.Checkout();
+		double cost = 0;
+		std::vector<Item *> items = ShoppingCart->get_items();
+		for (Item * i : items) {
+		cost += (i->get_cost() * i->get_quantity()) * 1.08845;
+		}
+		REQUIRE(final == cost);
 	}
 }
 
