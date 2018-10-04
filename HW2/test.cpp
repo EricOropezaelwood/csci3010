@@ -29,43 +29,60 @@ TEST_CASE ( "addItem", "[shoppingCart]")
 		std::vector<Item *> after = sc.get_items();
 		REQUIRE(after.back() == inventory[0]);
 	}
-	/*SECTION( "Check if inventory's quantity is reduced" )
+	SECTION( "Check if inventory's quantity is increased" )
 	{
 		int before = inventory[0] -> get_quantity();
 		sc.AddItem(inventory[0]);
 		int after = inventory[0] -> get_quantity();
-		REQUIRE();
-	}*/
+		REQUIRE(before == after - 1);
+	}
 }
 
 TEST_CASE ( "removeItem", "[shoppingCart]")
 {
-	SECTION( "removeItem" )
+	SECTION( "Basic functionality" )
 	{
 		sc.AddItem(inventory[0]);
 		sc.AddItem(inventory[1]);
 		std::vector<Item *> before = sc.get_items();
 		sc.RemoveItem(inventory[0]);
 		std::vector<Item *> after = sc.get_items();
-
-		REQUIRE(before.size() != after.size());
+		REQUIRE(before == after);
 	}
-
+	SECTION( "Check if inventory's quantity is decreased" )
+        {
+		sc.AddItem(inventory[0]);
+                int before = inventory[0] -> get_quantity();
+                sc.RemoveItem(inventory[0]);
+                int after = inventory[0] -> get_quantity();
+                REQUIRE(before == after + 1);
+        }
 }
 
 TEST_CASE ( "displayCart", "[shoppingCart]")
 {
-	SECTION( "displayCart" )
+	SECTION( "Basic functionality with no items in cart" )
 	{
 		sc.ClearCart();
 		REQUIRE(sc.DisplayCart() == "");
+	}
+	SECTION( "Basic functionality with items in cart" )
+	{
+		sc.AddItem(inventory[2]);
+		sc.AddItem(inventory[1]);
+		std::vector<Item *> items = sc.get_items();
+		std::string str = "";
+		for(Item * i: items){
+			str += i->ToString() + "\n";
+		}
+		REQUIRE(sc.DisplayCart() == str);
 	}
 
 }
 
 TEST_CASE ( "clearCart", "[shoppingCart]")
 {
-	SECTION( "clearCart" )
+	SECTION( "Basic funtionality" )
 	{
 		sc.ClearCart();
 		std::vector<Item * > empty = sc.get_items();
@@ -75,17 +92,33 @@ TEST_CASE ( "clearCart", "[shoppingCart]")
 
 }
 
-// get item??
+/*
+No need for getter function!!!
+TEST_CASE ( "get_items", "[shoppingCart]")
+{
+	SECTION( "Basic functionality" )
+	{
+	}
+}
+*/
+
+TEST_CASE ( "constructor", "[store]")
+{
+	SECTION( "Check if inventory is empty" )
+	{
+		REQUIRE(!inventory.empty());
+	}
+}
 
 TEST_CASE ( "displayInventory", "[store]")
 {
-	SECTION( "displayInventory" )
+	SECTION( "Basic functionality" )
 	{
-		std::string inv = store.DisplayInventory();
-		//std::cout << inv << std::endl;
-		//std::string expected = "Tea: 2.00 - 7 \nTall Candle: 7.00 - 3 \nKettle: 15.00 - 2 \n";
-		//std::cout << expected << std::endl;
-		REQUIRE( inv != "");
+		std::string str = "";
+		for (Item * i : inventory) {
+			str += i->ToString() + "\n";
+		}
+		REQUIRE(store.DisplayInventory() == str);
 	}
 }
 
